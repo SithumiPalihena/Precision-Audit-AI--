@@ -1,7 +1,7 @@
 # Precision-Audit-AI
 An AI-native website auditing tool designed for Eight25Media. This tool performs real-time scraping of a single webpage, extracts key marketing and SEO metrics, and uses LLM intelligence to provide structured insights and actionable recommendations.
 
-Live Demo: https://precision-audit-ai.vercel.app/
+Live Demo: https://precision-audit-ai-t8w9.vercel.app/
 
 🚀 Overview
 This tool was built to help marketing agencies quickly evaluate a webpage's performance through two distinct layers:
