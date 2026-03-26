@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>AI Website Audit Tool</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f0f2f8;
+      --surface: #ffffff;
+      --surface-low: #f5f6fb;
+      --border: #e2e6f3;
+      --border-strong: #c8d0e8;
+      --primary: #1a46c4;
+      --primary-light: #dce4ff;
+      --primary-mid: #4a6fe8;
+      --text-head: #0d1d4a;
+      --text-body: #3a4a72;
+      --text-muted: #7a8ab2;
+      --error: #b0283c;
+      --error-bg: #fdf0f2;
+      --green: #1a7a45;
+      --green-bg: #e5f7ed;
+      --badge-good-bg: #dcfce7;
+      --badge-good: #166534;
+      --badge-bad-bg: #fee2e2;
+      --badge-bad: #991b1b;
+      --shadow-sm: 0 1px 3px rgba(20, 40, 100, .07), 0 1px 2px rgba(20, 40, 100, .04);
+      --shadow-md: 0 4px 16px rgba(20, 40, 100, .09), 0 1px 4px rgba(20, 40, 100, .05);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-head);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-head);
+      letter-spacing: -.3px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    nav a {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    nav a:hover {
+      color: var(--text-head);
+    }
+
+    nav a.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 2px;
+    }
+
+    .btn-new-audit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+
+    .btn-new-audit:hover {
+      opacity: .88;
+      transform: scale(.97);
+    }
+
+    /* ── MAIN ───────────────────────────────────────────── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 64px 32px 80px;
+    }
+
+    /* ── HERO ───────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 56px;
+    }
+
+    .hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -.8px;
+      color: var(--text-head);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .accent {
+      color: var(--primary);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-body);
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+
+    /* ── SEARCH BAR ─────────────────────────────────────── */
+    .search-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      padding: 6px 6px 6px 16px;
+      transition: box-shadow .2s;
+    }
+
+    .search-wrap:focus-within {
+      box-shadow: 0 0 0 3px rgba(26, 70, 196, .15), var(--shadow-md);
+      border-color: var(--primary-mid);
+    }
+
+    .search-icon {
+      color: var(--text-muted);
+      display: flex;
+      margin-right: 8px;
+    }
+
+    .search-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-head);
+    }
+
+    .search-wrap input::placeholder {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .btn-analyze {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 11px 28px;
+      border-radius: 100px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+
+    .btn-analyze:hover {
+      background: #1539a8;
+    }
+
+    .btn-analyze:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .spin {
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── ERROR BANNER ───────────────────────────────────── */
+    #errorBanner {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--error-bg);
+      border: 1px solid #f5c6cc;
+      color: var(--error);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ── RESULTS ────────────────────────────────────────── */
+    #resultsContainer {
+      transition: opacity .3s;
+    }
+
+    .section-gap {
+      margin-bottom: 20px;
+    }
+
+    /* ── CARDS ──────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+    }
+
+    /* ── METRICS ROW ────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      padding: 22px 24px;
+    }
+
+    .metric-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .metric-icon.blue {
+      background: #dce4ff;
+      color: var(--primary);
+    }
+
+    .metric-icon.slate {
+      background: #e8eaf2;
+      color: #4a5568;
+    }
+
+    .metric-icon.teal {
+      background: #d4f0f0;
+      color: #0a7080;
+    }
+
+    .metric-label h3 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text-head);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .metric-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* headings sub-values */
+    .headings-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      margin-bottom: 6px;
+    }
+
+    .h-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-head);
+      letter-spacing: -.5px;
+    }
+
+    .h-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-good {
+      background: var(--badge-good-bg);
+      color: var(--badge-good);
+    }
+
+    .badge-bad {
+      background: var(--badge-bad-bg);
+      color: var(--badge-bad);
+    }
+
+    /* ── BOTTOM ROW ─────────────────────────────────────── */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* meta card */
+    .meta-card {
+      padding: 24px;
+    }
+
+    .meta-card h3 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .meta-field {
+      background: var(--surface-low);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .meta-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .meta-field-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .meta-field-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-head);
+      line-height: 1.5;
+    }
+
+    .meta-field-value.desc {
+      font-weight: 400;
+      color: var(--text-body);
+    }
+
+    /* stats 2x2 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      padding: 18px 20px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-head);
+      letter-spacing: -.5px;
+    }
+
+    .stat-value.error {
+      color: var(--error);
+    }
+
+    .stat-card.error-accent {
+      border-left: 3px solid var(--error);
+    }
+
+    /* ── AI INSIGHTS ────────────────────────────────────── */
+    .insights-card {
+      display: flex;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 20px;
+    }
+
+    .insights-left {
+      width: 36%;
+      background: var(--primary);
+      padding: 36px 32px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .ai-icon-wrap {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, .12);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      font-size: 26px;
+    }
+
+    .insights-left h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin-bottom: 16px;
+    }
+
+    .ai-score {
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 20px;
+      letter-spacing: -2px;
+    }
+
+    .ai-score span {
+      font-size: 22px;
+      font-weight: 400;
+      opacity: .6;
+    }
+
+    .ai-note {
+      font-size: 13px;
+      opacity: .82;
+      line-height: 1.6;
+    }
+
+    .insights-right {
+      flex: 1;
+      padding: 32px 36px;
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px 32px;
+    }
+
+    .insight-item h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-head);
+      margin-bottom: 10px;
+    }
+
+    .insight-item h4 .material-symbols-outlined {
+      color: var(--primary);
+      font-size: 18px;
+    }
+
+    .insight-item p {
+      font-size: 13px;
+      color: var(--text-body);
+      line-height: 1.65;
+    }
+
+    /* ── RECOMMENDATIONS ────────────────────────────────── */
+    .recs-card {
+      padding: 32px;
+    }
+
+    .recs-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-head);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recs-card h3 .material-symbols-outlined {
+      color: var(--primary);
+      font-size: 22px;
+    }
+
+    .rec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--surface-low);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: transform .15s;
+      cursor: default;
+    }
+
+    .rec-item:hover {
+      transform: translateX(3px);
+    }
+
+    .rec-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .rec-text {
+      font-size: 14px;
+      color: var(--text-body);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .rec-text strong {
+      color: var(--text-head);
+      font-weight: 700;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      margin-top: 0;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-head);
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .bottom-row {
+        grid-template-columns: 1fr;
+      }
+
+      .insights-card {
+        flex-direction: column;
+      }
+
+      .insights-left {
+        width: 100%;
+      }
+
+      .insights-right {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 40px 16px 60px;
+      }
+
+      .header-inner {
+        padding: 0 16px;
+      }
+
+      nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">AI Website Audit Tool</div>
+      <nav>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">History</a>
+        <a href="#">Settings</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Audit your website with <span class="accent">Precision Editorial AI</span></h1>
+      <p>Enter your URL below to receive a comprehensive analysis of your site's SEO performance, messaging clarity, and
+        editorial quality in seconds.</p>
+
+      <div class="search-wrap">
+        <span class="search-icon material-symbols-outlined">link</span>
+        <input type="url" id="auditUrl" placeholder="https://example.com" />
+        <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">
+          <span id="btnText">Analyze</span>
+          <span class="hidden material-symbols-outlined" id="loadingIcon"
+            style="font-size:18px">progress_activity</span>
+        </button>
+      </div>
+      <div id="errorBanner"></div>
+    </section>
+
+    <!-- Results -->
+    <div id="resultsContainer">
+
+      <!-- Top metrics row -->
+      <div class="metrics-grid section-gap">
+
+        <!-- Word Count -->
+        <div class="card metric-card">
+          <div class="metric-label">
+            <div class="metric-icon blue"><span class="material-symbols-outlined"
+                style="font-size:18px">description</span></div>
+            <h3>Word Count</h3>
+          </div>
+          <div class="metric-value" id="wordCount">—</div>
+          <div class="metric-note">Optimal for long-form SEO</div>
+        </div>
+
+        <!-- Headings Hierarchy -->
+        <div class="card metric-card">
+          <div class="metric-label">
+            <div class="metric-icon slate"><span class="material-symbols-outlined"
+                style="font-size:18px">format_h1</span></div>
+            <h3>Headings Hierarchy</h3>
+          </div>
+          <div class="headings-row">
+            <div><span class="h-val" id="h1Count">—</span><span class="h-tag">H1</span></div>
+            <div><span class="h-val" id="h2Count">—</span><span class="h-tag">H2</span></div>
+            <div><span class="h-val" id="h3Count">—</span><span class="h-tag">H3</span></div>
+          </div>
+          <span class="badge badge-good" id="headingsBadge">Pending</span>
+        </div>
+
+        <!-- CTA Count -->
+        <div class="card metric-card">
+          <div class="metric-label">
+            <div class="metric-icon teal"><span class="material-symbols-outlined"
+                style="font-size:18px">ads_click</span></div>
+            <h3>CTA Count</h3>
+          </div>
+          <div class="metric-value" id="ctaCount">—</div>
+          <div class="metric-note">Standard conversion density</div>
+        </div>
+
+      </div>
+
+      <!-- Bottom row: Meta + Stats -->
+      <div class="bottom-row section-gap">
+
+        <!-- Meta Details -->
+        <div class="card meta-card">
+          <h3>Meta Details</h3>
+          <div class="meta-field">
+            <div class="meta-field-label">Title Tag</div>
+            <div class="meta-field-value" id="metaTitle">—</div>
+          </div>
+          <div class="meta-field">
+            <div class="meta-field-label">Meta Description</div>
+            <div class="meta-field-value desc" id="metaDesc">—</div>
+          </div>
+        </div>
+
+        <!-- Stats 2x2 -->
+        <div class="stats-grid">
+          <div class="card stat-card">
+            <div class="stat-label">Internal Links</div>
+            <div class="stat-value" id="internalLinks">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">External Links</div>
+            <div class="stat-value" id="externalLinks">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Image Count</div>
+            <div class="stat-value" id="imageCount">—</div>
+          </div>
+          <div class="card stat-card error-accent">
+            <div class="stat-label">Missing Alt</div>
+            <div class="stat-value error" id="missingAlt">—</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- AI Insights -->
+      <div class="insights-card">
+        <div class="insights-left">
+          <div class="ai-icon-wrap">
+            <span class="material-symbols-outlined"
+              style="font-variation-settings:'FILL' 1;color:#fff">auto_awesome</span>
+          </div>
+          <h2>AI Narrative Score</h2>
+          <div class="ai-score" id="aiScore">—<span>/100</span></div>
+          <p class="ai-note" id="aiScoreNote">Pending analysis...</p>
+        </div>
+        <div class="insights-right">
+          <div class="insight-item">
+            <h4><span class="material-symbols-outlined">search</span> SEO Analysis</h4>
+            <p id="seoInsight">Pending</p>
+          </div>
+          <div class="insight-item">
+            <h4><span class="material-symbols-outlined">psychology</span> Messaging Clarity</h4>
+            <p id="messagingInsight">Pending</p>
+          </div>
+          <div class="insight-item">
+            <h4><span class="material-symbols-outlined">bolt</span> CTA Effectiveness</h4>
+            <p id="ctaInsight">Pending</p>
+          </div>
+          <div class="insight-item">
+            <h4><span class="material-symbols-outlined">layers</span> UX Issues</h4>
+            <p id="uxInsight">Pending</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="card recs-card">
+        <h3><span class="material-symbols-outlined">verified</span> Strategic Recommendations</h3>
+        <div class="rec-list" id="recommendationsList">
+          <p style="font-size:13px;color:var(--text-muted);font-style:italic">Run an audit to see recommendations.</p>
+        </div>
+      </div>
+
+    </div><!-- /resultsContainer -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-copy">© 2026 Precision Editorial AI. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">API Documentation</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── CONFIG ───────────────────────────────────────────────────────────────
+    const API_URL = window.location.protocol === 'file:'
+      ? 'http://localhost:5000/api/audit'
+      : '/api/audit';
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function showError(msg) {
+      const banner = document.getElementById('errorBanner');
+      banner.textContent = msg;
+      banner.style.display = 'block';
+    }
+
+    function hideError() {
+      const banner = document.getElementById('errorBanner');
+      banner.style.display = 'none';
+    }
+
+    function runAnalysis() {
+      const input = document.getElementById('auditUrl');
+      const btn = document.getElementById('analyzeBtn');
+      const btnText = document.getElementById('btnText');
+      const icon = document.getElementById('loadingIcon');
+      const results = document.getElementById('resultsContainer');
+
+      if (!input.value) {
+        showError('Please enter a valid URL');
+        return;
+      }
+
+      hideError();
+      btnText.textContent = 'Analyzing...';
+      icon.classList.remove('hidden');
+      icon.classList.add('spin');
+      btn.disabled = true;
+      results.style.opacity = '0.5';
+      results.style.pointerEvents = 'none';
+
+      const url = input.value;
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      })
+        .then(async response => {
+          const payload = await response.json().catch(() => null);
+          if (!response.ok) throw new Error(payload?.error || `Server error: ${response.status}`);
+          return payload;
+        })
+        .then(data => {
+          if (data.warning) showError(data.warning);
+          else hideError();
+
+          // ── Metrics ──────────────────────────────────────────────────────────
+          document.getElementById('wordCount').textContent = data.metrics.wordCount.toLocaleString();
+          document.getElementById('h1Count').textContent = data.metrics.headings.h1;
+          document.getElementById('h2Count').textContent = data.metrics.headings.h2;
+          document.getElementById('h3Count').textContent = data.metrics.headings.h3;
+          document.getElementById('ctaCount').textContent = data.metrics.ctas;
+          document.getElementById('internalLinks').textContent = data.metrics.links.internal;
+          document.getElementById('externalLinks').textContent = data.metrics.links.external;
+          document.getElementById('imageCount').textContent = data.metrics.images.total;
+          document.getElementById('missingAlt').textContent = data.metrics.images.missingAltPercent + '%';
+          document.getElementById('metaTitle').textContent = data.metrics.meta.title || '(none)';
+          document.getElementById('metaDesc').textContent = data.metrics.meta.description || '(none)';
+
+          // Badge based on H1 count
+          const badge = document.getElementById('headingsBadge');
+          if (data.metrics.headings.h1 === 1) {
+            badge.textContent = 'Perfect';
+            badge.className = 'badge badge-good';
+          } else {
+            badge.textContent = data.metrics.headings.h1 === 0 ? 'Missing H1' : 'Multiple H1s';
+            badge.className = 'badge badge-bad';
+          }
+
+          // ── AI Insights ───────────────────────────────────────────────────────
+          if (data.insights) {
+            document.getElementById('seoInsight').textContent = data.insights.seo || 'No data';
+            document.getElementById('messagingInsight').textContent = data.insights.messaging || 'No data';
+            document.getElementById('ctaInsight').textContent = data.insights.cta || 'No data';
+            document.getElementById('uxInsight').textContent = data.insights.ux || 'No data';
+          }
+
+          // ── Recommendations ───────────────────────────────────────────────────
+          const recList = document.getElementById('recommendationsList');
+          recList.innerHTML = '';
+          if (data.recommendations && data.recommendations.length > 0) {
+            data.recommendations.forEach((rec, idx) => {
+              const div = document.createElement('div');
+              div.className = 'rec-item';
+              div.innerHTML = `
+                <div class="rec-num">${idx + 1}</div>
+                <p class="rec-text">${rec}</p>
+              `;
+              recList.appendChild(div);
+            });
+          } else {
+            recList.innerHTML = '<p style="font-size:13px;color:var(--text-muted);font-style:italic">No recommendations returned.</p>';
+          }
+
+          // ── AI Score ─────────────────────────────────────────────────────────
+          let score = 50;
+          if (data.metrics.headings.h1 === 1) score += 10;
+          if (data.metrics.meta.title.length > 10) score += 10;
+          if (data.metrics.meta.description.length > 20) score += 10;
+          if (data.metrics.images.missingAltPercent < 20) score += 10;
+          if (data.metrics.wordCount > 300) score += 10;
+          score = Math.min(score, 100);
+          document.getElementById('aiScore').innerHTML = `${score}<span>/100</span>`;
+          document.getElementById('aiScoreNote').textContent = score >= 80
+            ? 'Strong editorial foundation detected.'
+            : score >= 60
+              ? 'Some improvements recommended.'
+              : 'Significant improvements needed.';
+        })
+        .catch(err => {
+          console.error('Error fetching audit:', err);
+          const locationHint = window.location.protocol === 'file:'
+            ? 'the backend is running on http://localhost:5000'
+            : 'the /api/audit endpoint is deployed and reachable';
+          showError(`Error: ${err.message}. Make sure ${locationHint}.`);
+        })
+        .finally(() => {
+          btnText.textContent = 'Analyze';
+          icon.classList.add('hidden');
+          icon.classList.remove('spin');
+          btn.disabled = false;
+          results.style.opacity = '1';
+          results.style.pointerEvents = 'auto';
+          results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('auditUrl').addEventListener('keydown', e => {
+        if (e.key === 'Enter') runAnalysis();
+      });
+    });
+  </script>
+</body>
+
+</html>
